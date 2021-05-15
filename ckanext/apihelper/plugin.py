@@ -2,6 +2,7 @@ import logging
 import routes.mapper
 import ckan.plugins as p
 import extract
+import ckanext.apihelper.views as views
 
 log = logging.getLogger('ckanext_apihelper')
 
@@ -10,6 +11,7 @@ class APIHelperPluginClass(p.SingletonPlugin):
     p.implements(p.IConfigurer, inherit=True)
     p.implements(p.IRoutes, inherit=True)
     p.implements(p.ITemplateHelpers, inherit=True)
+    p.implements(p.IBlueprint)
 
     actions = None
 
@@ -29,17 +31,21 @@ class APIHelperPluginClass(p.SingletonPlugin):
         p.toolkit.requires_ckan_version(min_version='2.1.1')
         p.toolkit.add_template_directory(config, 'templates')
         p.toolkit.add_resource('resource', 'ckanext-apihelper')
+    # IBlueprint
+
+    def get_blueprint(self):
+        return views.get_blueprints()
 
     #IRoutes
     def after_map(self, map):
         map.redirect('/apihelper', '/apihelper/get')
         map.redirect('/apihelper/', '/apihelper/get')
-        with routes.mapper.SubMapper(map,
-                controller='ckanext.apihelper.plugin:APIHelperController') as m:
-            m.connect('apihelper_get', '/apihelper/get', action='get')
-            m.connect('apihelper_create', '/apihelper/create', action='create')
-            m.connect('apihelper_update', '/apihelper/update', action='update')
-            m.connect('apihelper_delete', '/apihelper/delete', action='delete')
+        # with routes.mapper.SubMapper(map,
+        #         controller='ckanext.apihelper.plugin:APIHelperController') as m:
+        #     m.connect('apihelper_get', '/apihelper/get', action='get')
+        #     m.connect('apihelper_create', '/apihelper/create', action='create')
+        #     m.connect('apihelper_update', '/apihelper/update', action='update')
+        #     m.connect('apihelper_delete', '/apihelper/delete', action='delete')
         return map
 
     #ITemplateHelpers
@@ -50,16 +56,16 @@ class APIHelperPluginClass(p.SingletonPlugin):
         return helpers
 
 
-class APIHelperController(p.toolkit.BaseController):
-
-    def get(self):
-        return p.toolkit.render('apihelper/index.html')
-
-    def create(self):
-        return p.toolkit.render('apihelper/index.html')
-
-    def update(self):
-        return p.toolkit.render('apihelper/index.html')
-
-    def delete(self):
-        return p.toolkit.render('apihelper/index.html')
+# class APIHelperController(p.toolkit.BaseController):
+#
+#     def get(self):
+#         return p.toolkit.render('apihelper/index.html')
+#
+#     def create(self):
+#         return p.toolkit.render('apihelper/index.html')
+#
+#     def update(self):
+#         return p.toolkit.render('apihelper/index.html')
+#
+#     def delete(self):
+#         return p.toolkit.render('apihelper/index.html')
